@@ -35,13 +35,17 @@ switch ($type) {
         $backlinks = $toxicSeo->report(404);
         $title = "Error 404 Websites";
         break;
-    case "error-404":
-        $backlinks = $toxicSeo->report(502);
-        $title = "Error 502 Websites";
-        break;
     case "error-500":
         $backlinks = $toxicSeo->report(500);
         $title = "Error 500 Websites";
+        break;        
+    case "error-502":
+        $backlinks = $toxicSeo->report(502);
+        $title = "Error 502 Websites";
+        break;
+    case "error-503":
+        $backlinks = $toxicSeo->report(502);
+        $title = "Error 502 Websites";
         break;
     case "dead-websites":
         $backlinks = $toxicSeo->report(-1);
