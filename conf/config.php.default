@@ -7,7 +7,7 @@ $settings = (object) [
 
     // DB Connexion
     'hostname' => "localhost",
-    'database' => "toxic",
+    'database' => "toxicseo",
     'username' => "",
     'password' => ""
 ];
