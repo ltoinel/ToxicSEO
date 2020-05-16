@@ -12,6 +12,12 @@ Clone the ToxiSEO project on your PHP Webserver.
 $ git clone https://github.com/ltoinel/ToxicSEO.git
 ```
 
+Install the third party librairies.
+
+```bash
+$ composer install
+```
+
 Copy the default config file.
 
 ```bash
