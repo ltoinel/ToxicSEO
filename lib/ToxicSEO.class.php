@@ -70,7 +70,7 @@ class ToxicSEO
 
 		// For each links found we analyze the content of the page.
 		while ($backlink = $stmt->fetch(PDO::FETCH_OBJ)) {
-			$this->analyzeBacklink($backlink);
+			//$this->analyzeBacklink($backlink);
 			$this->analyzeRanking($backlink);
 		}
 	}
@@ -150,27 +150,49 @@ class ToxicSEO
 	 */
 	function analyzeRanking($backlink)
 	{
+
+		// We don't analyse existing websites.
+		if ($backlink->alexa_global_rank != 0) return;
+
 		// Update statement
-		$updt = $this->getDbConnection()->prepare("UPDATE backlinks SET alexa_global_rank=:alexa_global_rank where id=:id");
+		$updt = $this->getDbConnection()->prepare("UPDATE backlinks SET alexa_global_rank=:alexa_global_rank where domain=:domain");
 
-		$domain = $backlink->domain;
+		$globalRanking = $this->getAlexaRank($backlink->domain);
 
-		$alexaGlobalRank = SEOstats\Services\Alexa::getGlobalRank($domain);
-		if ($alexaGlobalRank == 'n.a.'){
-			$alexaGlobalRank = 0;
+		if ($globalRanking != 0){
+			// Fetch the data
+			$data = array(
+				'domain' => $backlink->domain,
+				'alexa_global_rank' => $globalRanking
+			);
+
+			if (! $updt->execute($data)) {
+				print_r($updt->errorInfo());
+			};
 		}
-		// Fetch the data
-		$data = array(
-			'id' => $backlink->id,
-			'alexa_global_rank' => $alexaGlobalRank
-		);
-
-		if (! $updt->execute($data)) {
-			print_r($updt->errorInfo());
-		};
+		
 	}
 
-
+	/**
+	 * Return the AlexaRank for a Website.
+	 */
+	private function getAlexaRank($domain)
+    {
+		$response = file_get_contents("https://www.alexa.com/minisiteinfo/" . urlencode($domain));
+		echo $response;
+		
+		$dom = new \DomDocument();
+		$dom->loadHTML($response);
+		$nodes = (new \DomXPath($dom))->query("//div[contains(@class, 'data')]");
+		if (isset($nodes[0]->nodeValue)) {
+			$globalRanking = (int) str_replace(array(',', '.'), '', $nodes[0]->nodeValue);
+			echo "Get GlobalRanking for $domain : $globalRanking\n";
+			return $globalRanking;
+		}
+			
+        return 0;
+	}
+	
 	/**
 	 * Extract HTML page information
 	 */
