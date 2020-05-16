@@ -1,0 +1,13 @@
+<?php
+
+$settings = (object) [
+
+    // Main settings
+    'website' => "mywebsite.com",
+
+    // DB Connexion
+    'hostname' => "localhost",
+    'database' => "toxic",
+    'username' => "",
+    'password' => ""
+];

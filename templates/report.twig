@@ -1,0 +1,57 @@
+{# templates/report.twig #}
+
+{% extends "base.twig" %}
+
+{% block content %}
+
+<h2{{ title }}</h2>
+
+<table class="table table-hover">
+<thead>
+  <tr>
+    <th>BL Count</th>
+    <th>Backlink</th>
+    <th>Alexa GR</th>
+    <th>HTTP Code</th>
+    <th>Disavow</th>
+  </tr>
+  </thead>
+<tbody>
+
+{% for backlink in backlinks %}
+
+<tr scope="row">
+    <td>{{ backlink.cnt }}</td>
+    <td>
+        <a href="{{ backlink.url }}" target="_blank"><span class="oi oi-external-link"></span> {{ backlink.url }}</a><br/>
+        {% if backlink.target|length %}
+        <small class="text-muted"><a href="{{ backlink.target }}" target="_blank">↳ {{ backlink.label }}</a></small>
+        {% endif %}
+    </td>
+    <td>
+      {{ backlink.alexa_global_rank }}
+    </td>
+    <td>
+      {% if backlink.http_code == 200 %}
+        <span class="badge badge-success">OK {{ backlink.http_code }}</span>
+      {% elseif backlink.http_code == -1 %}
+        <span class="badge badge-danger">Website Not Available</span>
+      {% else %}
+        <span class="badge badge-warning">Error {{ backlink.http_code }}</span>
+      {% endif %}
+    </td>
+    <td>
+      {% if backlink.disavow %}
+        <a href="#" class="badge badge-danger">Disavowed 🔥</a>
+      {% else %} 
+        <a href="#" class="badge badge-info">Clean 💧</a>
+      {% endif %}
+    </td>
+</tr>
+
+{% endfor %}
+
+</tbody>
+</table>
+
+{% endblock %}

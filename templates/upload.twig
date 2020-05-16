@@ -1,0 +1,37 @@
+{# templates/report.twig #}
+
+{% extends "base.twig" %}
+
+{% block content %}
+
+<h2>Upload links file</h2>
+
+{% if error|length %}
+<div class="alert alert-danger" role="alert">
+  {{ error }}
+</div>
+{% endif %}
+
+{% if success|length %}
+<div class="alert alert-success" role="alert">
+  {{ success }}
+</div>
+{% endif %}
+
+<p>Upload links files from Google Webmaster tools</p>
+
+  <form enctype="multipart/form-data" action="upload.php" method="post">
+    <div class="form-row">
+      <div class="col-auto">
+          <input type="hidden" name="MAX_FILE_SIZE" value="10000000" />
+          <input type="file" class="custom-file-input" id="csvFile" name="csvFile" />
+          <label class="custom-file-label" for="csvFile">Choose a CSV file</label>
+      </div>
+      <div class="col-auto">
+          <button type="submit" class="btn btn-primary mb-2">Submit</button>
+       </div>
+     </div>
+  </form>
+
+
+{% endblock %}

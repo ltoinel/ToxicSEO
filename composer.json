@@ -1,0 +1,8 @@
+{
+	"name": "ToxicSEO",
+	"description" : "ToxicSEO allows you to analyse your backlinks",
+	"require": {
+		"seostats/seostats": "dev-master",
+		"twig/twig": "^3.0"
+	}
+}
