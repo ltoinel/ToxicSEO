@@ -1,0 +1,52 @@
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+<a class="navbar-brand" href="#">ToxicSEO</a>
+<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+<span class="navbar-toggler-icon"></span>
+</button>
+<div class="collapse navbar-collapse" id="navbarNavDropdown">
+<ul class="navbar-nav">
+    <li class="nav-item active">
+    <a class="nav-link" href="index.php"><span class="oi oi-pie-chart"></span> Dashboard</a>
+    </li>
+    <li class="nav-item dropdown">
+    <a class="nav-link dropdown-toggle" href="#" id="reportMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        <span class="oi oi-graph"></span> Reports
+    </a>
+    <div class="dropdown-menu" aria-labelledby="reportMenuLink">
+        <a class="dropdown-item" href="report.php?type=new"><span class="oi oi-document"></span> New</a>
+        <a class="dropdown-item" href="report.php?type=success"><span class="oi oi-document"></span> Success</a>
+        <a class="dropdown-item" href="report.php?type=not-found"><span class="oi oi-document"></span> Not found</a>
+        <a class="dropdown-item" href="report.php?type=dead-websites"><span class="oi oi-document"></span> Dead websites</a>
+    </div>
+    </li>
+
+    <li class="nav-item dropdown">
+    <a class="nav-link dropdown-toggle" href="#" id="errorMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        <span class="oi oi-warning"></span> HTTP Errors
+    </a>
+    <div class="dropdown-menu" aria-labelledby="errorMenuLink">
+        <a class="dropdown-item" href="report.php?type=error-403"><span class="oi oi-document"></span> Error 403 : Forbidden</a>
+        <a class="dropdown-item" href="report.php?type=error-404"><span class="oi oi-document"></span> Error 404 : Not Found</a>
+        <a class="dropdown-item" href="report.php?type=error-500"><span class="oi oi-document"></span> Error 500 : Internal Server Error</a>
+        <a class="dropdown-item" href="report.php?type=error-502"><span class="oi oi-document"></span> Error 502 : Bad Gateway</a>
+        <a class="dropdown-item" href="report.php?type=error-503"><span class="oi oi-document"></span>> Error 503 : Service Unavailable</a>
+    </div>
+    </li>
+
+    <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="#" id="disavowMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        <span class="oi oi-thumb-down"></span> Disavow
+    </a>
+    <div class="dropdown-menu" aria-labelledby="disavowMenuLink">
+        <a class="dropdown-item" href="report.php?type=disavow"><span class="oi oi-list"></span> List of Disavowed Websites</a>
+        <a class="dropdown-item" href="disavow.php"><span class="oi oi-file"></span> Generate Disavow File</a>
+    </div>
+    </li>
+
+    
+    <li class="nav-item">
+    <a class="nav-link" href="upload.php"><span class="oi oi-cloud-upload"></span> Upload</a>
+    </li>
+</ul>
+</div>
+</nav>

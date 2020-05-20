@@ -63,15 +63,26 @@ class ToxicSEO
 	function analyze()
 	{
 		// Find all the backlinks where statusCode is Null
-		$stmt = $this->getDbConnection()->prepare("SELECT * FROM backlinks");
+		//$stmt = $this->getDbConnection()->prepare("SELECT * FROM backlinks");
+
+		// Find all the backlinks
+		//$stmt->execute();
+
+		// For each links found we analyze the content of the page.
+		//while ($backlink = $stmt->fetch(PDO::FETCH_OBJ)) {
+			//$this->analyzeBacklink($backlink);
+		//}
+
+
+		// Find all the backlinks where statusCode is Null
+		$stmt = $this->getDbConnection()->prepare("SELECT * FROM backlinks GROUP BY domain");
 
 		// Find all the backlinks
 		$stmt->execute();
 
 		// For each links found we analyze the content of the page.
 		while ($backlink = $stmt->fetch(PDO::FETCH_OBJ)) {
-			//$this->analyzeBacklink($backlink);
-			$this->analyzeRanking($backlink);
+			$this->analyzeDomainRanking($backlink);
 		}
 	}
 
@@ -133,7 +144,7 @@ class ToxicSEO
 			$and = true;
 		}
 	
-		$sql .= " GROUP BY domain ORDER BY cnt DESC";
+		$sql .= " GROUP BY domain ORDER BY alexa_global_rank ASC, cnt DESC";
 
 		// Find all the backlinks where statusCode is Null
 		$stmt = $this->getDbConnection()->prepare($sql);
@@ -148,38 +159,35 @@ class ToxicSEO
 	/**
 	 * Extract rank page information
 	 */
-	function analyzeRanking($backlink)
+	function analyzeDomainRanking($backlink)
 	{
-
 		// We don't analyse existing websites.
-		if ($backlink->alexa_global_rank != 0) return;
+		if ($backlink->alexa_global_rank != null) return;
 
 		// Update statement
 		$updt = $this->getDbConnection()->prepare("UPDATE backlinks SET alexa_global_rank=:alexa_global_rank where domain=:domain");
 
 		$globalRanking = $this->getAlexaRank($backlink->domain);
 
-		if ($globalRanking != 0){
-			// Fetch the data
-			$data = array(
-				'domain' => $backlink->domain,
-				'alexa_global_rank' => $globalRanking
-			);
+		// Fetch the data
+		$data = array(
+			'domain' => $backlink->domain,
+			'alexa_global_rank' => $globalRanking
+		);
 
-			if (! $updt->execute($data)) {
-				print_r($updt->errorInfo());
-			};
-		}
+		if (! $updt->execute($data)) {
+			print_r($updt->errorInfo());
+		};
 		
 	}
 
 	/**
 	 * Return the AlexaRank for a Website.
 	 */
-	private function getAlexaRank($domain)
+	function getAlexaRank($domain)
     {
 		$response = file_get_contents("https://www.alexa.com/minisiteinfo/" . urlencode($domain));
-		echo $response;
+		//echo $response;
 		
 		$dom = new \DomDocument();
 		$dom->loadHTML($response);
