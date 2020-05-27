@@ -25,7 +25,7 @@ switch ($type) {
         break;
     case "disavow":
         $backlinks = $toxicSeo->report(null,null,true);
-        $title = "Backlinks not found";
+        $title = "Disavowed backlinks";
         break;
     case "error-403":
         $backlinks = $toxicSeo->report(403);

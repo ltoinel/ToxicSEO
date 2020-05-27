@@ -45,7 +45,7 @@ class ToxicSEO
 	function saveOrUpdate($url){
 
 		// Insert statement
-		$stmt = $this->getDbConnection()->prepare("INSERT INTO backlinks(url) VALUES (:url) ON DUPLICATE KEY UPDATE creation_date = NOW()");
+		$stmt = $this->getDbConnection()->prepare("INSERT INTO backlinks(url,domain) VALUES (:url,SUBSTRING_INDEX(SUBSTRING_INDEX(SUBSTRING_INDEX(SUBSTRING_INDEX(:url, '/', 3), '://', -1), '/', 1), '?', 1)) ON DUPLICATE KEY UPDATE creation_date = NOW()");
 
 		// URL
 		$data = array(
@@ -62,28 +62,28 @@ class ToxicSEO
 	 */
 	function analyze()
 	{
-		// Find all the backlinks where statusCode is Null
-		//$stmt = $this->getDbConnection()->prepare("SELECT * FROM backlinks");
+		// Find all the backlinks where http code is not known
+		$stmt_http = $this->getDbConnection()->prepare("SELECT * FROM backlinks where http_code=0 or http_code=-1");
 
 		// Find all the backlinks
-		//$stmt->execute();
+		$stmt_http->execute();
 
 		// For each links found we analyze the content of the page.
-		//while ($backlink = $stmt->fetch(PDO::FETCH_OBJ)) {
-			//$this->analyzeBacklink($backlink);
-		//}
+		while ($backlink = $stmt_http->fetch(PDO::FETCH_OBJ)) {
+			$this->analyzeBacklink($backlink);
+		}
 
-
-		// Find all the backlinks where statusCode is Null
-		$stmt = $this->getDbConnection()->prepare("SELECT * FROM backlinks GROUP BY domain");
+		// Find all the backlinks where alexa_global_rank is not found
+		$stmt_alexa = $this->getDbConnection()->prepare("SELECT * FROM backlinks where alexa_global_rank=0 GROUP BY domain");
 
 		// Find all the backlinks
-		$stmt->execute();
+		$stmt_alexa->execute();
 
 		// For each links found we analyze the content of the page.
-		while ($backlink = $stmt->fetch(PDO::FETCH_OBJ)) {
+		while ($backlink = $stmt_alexa->fetch(PDO::FETCH_OBJ)) {
 			$this->analyzeDomainRanking($backlink);
 		}
+
 	}
 
 	/**
@@ -116,7 +116,7 @@ class ToxicSEO
 		$and = false;
 
 		// Filter on a status
-		if ($status != null) {
+		if (isset($status)) {
 			$sql .= " http_code = $status";
 			$and = true;
 		}
@@ -146,6 +146,8 @@ class ToxicSEO
 	
 		$sql .= " GROUP BY domain ORDER BY alexa_global_rank ASC, cnt DESC";
 
+		//echo $sql;
+
 		// Find all the backlinks where statusCode is Null
 		$stmt = $this->getDbConnection()->prepare($sql);
 
@@ -162,12 +164,15 @@ class ToxicSEO
 	function analyzeDomainRanking($backlink)
 	{
 		// We don't analyse existing websites.
-		if ($backlink->alexa_global_rank != null) return;
+		if ($backlink->alexa_global_rank != 0) return;
 
 		// Update statement
 		$updt = $this->getDbConnection()->prepare("UPDATE backlinks SET alexa_global_rank=:alexa_global_rank where domain=:domain");
 
 		$globalRanking = $this->getAlexaRank($backlink->domain);
+
+		// Debug information
+		echo "- Analyzing Alexa Global Rank  : $backlink->domain > $globalRanking\n";
 
 		// Fetch the data
 		$data = array(
@@ -195,10 +200,11 @@ class ToxicSEO
 		if (isset($nodes[0]->nodeValue)) {
 			$globalRanking = (int) str_replace(array(',', '.'), '', $nodes[0]->nodeValue);
 			echo "Get GlobalRanking for $domain : $globalRanking\n";
+			if ($globalRanking == 0) $globalRanking = -1;
 			return $globalRanking;
 		}
 			
-        return 0;
+        return -1;
 	}
 	
 	/**
@@ -213,6 +219,9 @@ class ToxicSEO
 
 		// We retreive the HTML page
 		$result = $this->fetchPage($url);
+
+		$code = $result['http_code'];
+		echo "- Analyzing backlink : $url > $code\n";
 
 		// Setup the data array
 		$data = array(
@@ -287,7 +296,7 @@ class ToxicSEO
 		curl_setopt($curl, CURLOPT_ENCODING, 'gzip, deflate');
 		curl_setopt($curl, CURLOPT_AUTOREFERER, true);
 		curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
-		curl_setopt($curl, CURLOPT_TIMEOUT, 10);
+		curl_setopt($curl, CURLOPT_TIMEOUT, 20);
 		curl_setopt($curl, CURLOPT_FOLLOWLOCATION, true);
 
 		// Call the URL

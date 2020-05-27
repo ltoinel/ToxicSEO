@@ -36,6 +36,8 @@
         <span class="badge badge-success">OK {{ backlink.http_code }}</span>
       {% elseif backlink.http_code == -1 %}
         <span class="badge badge-danger">Website Not Available</span>
+      {% elseif backlink.http_code == 0 %}
+        <span class="badge badge-warning">Website Not Analyzed</span>
       {% else %}
         <span class="badge badge-warning">Error {{ backlink.http_code }}</span>
       {% endif %}
